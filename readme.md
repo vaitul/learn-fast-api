@@ -8,14 +8,22 @@
 
 ### Installation
 1. Clone the repository
-2. Install dependencies:
+2. Create a virtual environment:
     ```bash
-    pip install fastapi uvicorn
+    python -m venv .venv
+    ```
+3. Activate it (macOS/Linux):
+    ```bash
+    source .venv/bin/activate
+    ```
+4. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
     ```
 
 ### Running the Application
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`
