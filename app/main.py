@@ -1,8 +1,12 @@
 from fastapi import FastAPI
+from app.api.v1 import routes_health
 
-app = FastAPI()
+app = FastAPI(title="Learn FastAPI", version="1.0.0")
 
 
-@app.get("/")
+app.include_router(routes_health.router, prefix="/api/v1")
+
+
+@app.get("/", tags=["root"])
 def root():
-    return {"message": "Hello"}
+    return {"message": "Hello world"}
