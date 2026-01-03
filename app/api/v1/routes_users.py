@@ -1,30 +1,16 @@
 from fastapi import APIRouter
-from dotenv import load_dotenv
-import psycopg2
-import os
 from app.repositories import user_repository
-
-load_dotenv()
+from app.schemas.user import UserCreate, UserResponse
 
 router = APIRouter(tags=["Users"])
 
-conn = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
-    database=os.getenv("DB_NAME"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    port=os.getenv("DB_PORT"),
-)
 
-cursor = conn.cursor()
-
-
-@router.get("/users")
+@router.get("/users", response_model=list[UserResponse])
 def users():
     return user_repository.get_all_users()
 
 
-@router.get("/user/{user_id}")
+@router.get("/user/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: int):
     user = user_repository.get_user_by_id(user_id)
     if user:
@@ -33,19 +19,16 @@ def get_user_by_id(user_id: int):
         return {"message": "User not found"}
 
 
-@router.post("/users")
-def create_user(name: str, email: str):
-    user = user_repository.create_user(name, email)
-    return {
-        "data": user,
-        "message": "User created successfully",
-    }
+@router.post("/users", response_model=UserResponse)
+def create_user(user: UserCreate):
+    created_user = user_repository.create_user(user.email, user.full_name)
+    return created_user
 
 
-@router.delete("/users/{user_id}")
+@router.delete("/users/{user_id}", response_model=UserResponse)
 def delete_user(user_id: int):
-    success = user_repository.delete_user_by_id(user_id)
-    if success:
-        return {"message": "User deleted successfully"}
+    deleted_user = user_repository.delete_user_by_id(user_id)
+    if deleted_user:
+        return deleted_user
     else:
         return {"message": "User not found"}
